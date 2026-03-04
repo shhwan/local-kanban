@@ -1,0 +1,87 @@
+package templates
+
+import (
+	"local-kanban/frontend/client"
+	"fmt"
+)
+
+templ TaskForm(labels []client.Label, stages []client.Stage) {
+	<div class="bg-white rounded-lg shadow-md p-6 mb-4">
+		<h3 class="text-lg font-semibold text-gray-700 mb-4">新しいタスクを作成</h3>
+
+		<form
+			hx-post="/tasks"
+			hx-target="#board"
+			hx-swap="outerHTML"
+			class="space-y-4"
+		>
+			<div>
+				<label for="title" class="block text-sm font-medium text-gray-600 mb-1">
+					タスクタイトル
+				</label>
+				<input
+					type="text"
+					id="title"
+					name="title"
+					placeholder="タスクのタイトルを入力..."
+					required
+					class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-colors"
+				/>
+			</div>
+
+			<div>
+				<label for="label_id" class="block text-sm font-medium text-gray-600 mb-1">
+					ラベル
+				</label>
+				<select
+					id="label_id"
+					name="label_id"
+					required
+					class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-colors"
+				>
+					<option value="">ラベルを選択してください</option>
+					for _, label := range labels {
+						<option value={ fmt.Sprintf("%d", label.ID) }>
+							{ label.Name }
+						</option>
+					}
+				</select>
+			</div>
+
+			<div>
+				<label for="stage_id" class="block text-sm font-medium text-gray-600 mb-1">
+					初期ステージ
+				</label>
+				<select
+					id="stage_id"
+					name="stage_id"
+					required
+					class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-colors"
+				>
+					<option value="">ステージを選択してください</option>
+					for _, stage := range stages {
+						<option value={ fmt.Sprintf("%d", stage.ID) }>
+							{ stage.Name }
+						</option>
+					}
+				</select>
+			</div>
+
+			<div class="flex gap-3">
+				<button
+					type="submit"
+					class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-6 rounded-lg shadow transition-colors"
+				>
+					作成
+				</button>
+				<button
+					type="button"
+					class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-6 rounded-lg transition-colors"
+					onclick="document.getElementById('task-form-container').classList.add('hidden')"
+				>
+					キャンセル
+				</button>
+			</div>
+		</form>
+	</div>
+}

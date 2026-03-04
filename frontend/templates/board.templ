@@ -1,0 +1,125 @@
+package templates
+
+import (
+	"local-kanban/frontend/client"
+	"fmt"
+	"strings"
+	"strconv"
+)
+
+type BoardData struct {
+	Stages []client.Stage
+	Tasks  []client.Task
+	Labels []client.Label
+}
+
+func tasksForStage(tasks []client.Task, stageID uint) []client.Task {
+	var filtered []client.Task
+	for _, t := range tasks {
+		if t.StageID == stageID {
+			filtered = append(filtered, t)
+		}
+	}
+	return filtered
+}
+
+func taskCountForStage(tasks []client.Task, stageID uint) string {
+	count := 0
+	for _, t := range tasks {
+		if t.StageID == stageID {
+			count++
+		}
+	}
+	return strconv.Itoa(count)
+}
+
+func totalTaskCount(tasks []client.Task) string {
+	return strconv.Itoa(len(tasks))
+}
+
+func stageHeaderColorClass(stageName string) string {
+	upper := strings.ToUpper(stageName)
+	switch {
+	case strings.Contains(upper, "TODO"):
+		return "bg-blue-100 text-blue-800"
+	case strings.Contains(upper, "DOING"):
+		return "bg-yellow-100 text-yellow-800"
+	case strings.Contains(upper, "DONE"):
+		return "bg-green-100 text-green-800"
+	default:
+		return "bg-gray-100 text-gray-700"
+	}
+}
+
+func stageColumnBorderClass(stageName string) string {
+	upper := strings.ToUpper(stageName)
+	switch {
+	case strings.Contains(upper, "TODO"):
+		return "border-t-4 border-blue-400"
+	case strings.Contains(upper, "DOING"):
+		return "border-t-4 border-yellow-400"
+	case strings.Contains(upper, "DONE"):
+		return "border-t-4 border-green-400"
+	default:
+		return "border-t-4 border-gray-400"
+	}
+}
+
+// WIP制限: 5件以上で警告（赤）、3件以上で注意（オレンジ）
+func wipWarningClass(tasks []client.Task, stageID uint, stageName string) string {
+	upper := strings.ToUpper(stageName)
+	if !strings.Contains(upper, "DOING") {
+		return ""
+	}
+	count := 0
+	for _, t := range tasks {
+		if t.StageID == stageID {
+			count++
+		}
+	}
+	if count >= 5 {
+		return "bg-red-200"
+	}
+	if count >= 3 {
+		return "bg-orange-100"
+	}
+	return ""
+}
+
+templ Board(data BoardData) {
+	@Layout("Kanban Board") {
+		<div id="board" class="space-y-6">
+			<div class="flex justify-between items-center">
+				<h2 class="text-xl font-semibold text-gray-700">タスクボード</h2>
+				<button
+					class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors"
+					onclick="document.getElementById('task-form-container').classList.toggle('hidden')"
+				>
+					+ タスク作成
+				</button>
+			</div>
+
+			<div id="task-form-container" class="hidden">
+				@TaskForm(data.Labels, data.Stages)
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+				for _, stage := range data.Stages {
+					<div class="bg-gray-200 rounded-lg p-4 min-h-[400px]">
+						<h3 class="font-bold text-gray-700 mb-3 text-center border-b border-gray-300 pb-2">
+							{ stage.Name }
+						</h3>
+						<div
+							id={ fmt.Sprintf("stage-%d", stage.ID) }
+							class="space-y-3"
+						>
+							for _, task := range tasksForStage(data.Tasks, stage.ID) {
+								@TaskCard(task, data.Stages)
+							}
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+	}
+}

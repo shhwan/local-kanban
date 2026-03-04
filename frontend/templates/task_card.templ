@@ -1,0 +1,133 @@
+package templates
+
+import (
+	"local-kanban/frontend/client"
+	"fmt"
+	"strconv"
+)
+
+func nextStageID(stages []client.Stage, currentStageID uint) uint {
+	currentPos := -1
+	for _, s := range stages {
+		if s.ID == currentStageID {
+			currentPos = s.Position
+			break
+		}
+	}
+
+	var nextID uint
+	nextPos := int(^uint(0) >> 1)
+	for _, s := range stages {
+		if s.Position > currentPos && s.Position < nextPos {
+			nextPos = s.Position
+			nextID = s.ID
+		}
+	}
+
+	return nextID
+}
+
+func workLogCount(logs []client.WorkLog) string {
+	return strconv.Itoa(len(logs))
+}
+
+func noteCount(notes []client.Note) string {
+	return strconv.Itoa(len(notes))
+}
+
+templ TaskCard(task client.Task, stages []client.Stage) {
+	<div
+		id={ fmt.Sprintf("task-%d", task.ID) }
+		class="bg-white rounded-lg shadow p-4 border-l-4 hover:shadow-md transition-shadow"
+		style={ fmt.Sprintf("border-left-color: %s", task.Label.Color) }
+	>
+		<h4 class="font-semibold text-gray-800 mb-2">{ task.Title }</h4>
+
+		<span
+			class="inline-block text-xs font-medium text-white px-2 py-1 rounded-full mb-2"
+			style={ fmt.Sprintf("background-color: %s", task.Label.Color) }
+		>
+			{ task.Label.Name }
+		</span>
+
+		<div class="flex gap-3 text-xs text-gray-500 mb-3">
+			<span title="作業ログ">
+				&#128221; { workLogCount(task.WorkLogs) }件
+			</span>
+			<span title="特記事項">
+				&#128204; { noteCount(task.Notes) }件
+			</span>
+		</div>
+
+		<details class="mb-2">
+			<summary class="text-xs text-indigo-600 cursor-pointer hover:text-indigo-800">作業ログを追加</summary>
+			<form
+				class="mt-2 space-y-1"
+				hx-post={ fmt.Sprintf("/tasks/%d/logs", task.ID) }
+				hx-target="#board"
+				hx-swap="outerHTML"
+			>
+				<textarea
+					name="content"
+					placeholder="作業内容を入力..."
+					class="w-full text-xs border rounded p-1 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+					rows="2"
+					required
+				></textarea>
+				<button
+					type="submit"
+					class="text-xs bg-indigo-500 hover:bg-indigo-600 text-white px-2 py-1 rounded transition-colors"
+				>
+					追加
+				</button>
+			</form>
+		</details>
+
+		<details class="mb-3">
+			<summary class="text-xs text-green-600 cursor-pointer hover:text-green-800">特記事項を追加</summary>
+			<form
+				class="mt-2 space-y-1"
+				hx-post={ fmt.Sprintf("/tasks/%d/notes", task.ID) }
+				hx-target="#board"
+				hx-swap="outerHTML"
+			>
+				<textarea
+					name="content"
+					placeholder="特記事項を入力..."
+					class="w-full text-xs border rounded p-1 focus:ring-1 focus:ring-green-500 focus:border-green-500"
+					rows="2"
+					required
+				></textarea>
+				<button
+					type="submit"
+					class="text-xs bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded transition-colors"
+				>
+					追加
+				</button>
+			</form>
+		</details>
+
+		<div class="flex justify-between items-center">
+			if nextStageID(stages, task.StageID) != 0 {
+				<button
+					class="text-sm bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition-colors"
+					hx-patch={ fmt.Sprintf("/tasks/%d/stage?stage_id=%d", task.ID, nextStageID(stages, task.StageID)) }
+					hx-target="#board"
+					hx-swap="outerHTML"
+				>
+					&#8594; 次へ
+				</button>
+			}
+
+			<button
+				class="text-sm text-red-500 hover:text-red-700 transition-colors"
+				hx-delete={ fmt.Sprintf("/tasks/%d", task.ID) }
+				hx-target="#board"
+				hx-swap="outerHTML"
+				hx-confirm="このタスクを削除しますか？"
+			>
+				&#128465; 削除
+			</button>
+		</div>
+	</div>
+}

@@ -312,5 +312,7 @@ local-kanban/
 
 ### Phase 4: 仕上げ
 - [ ] Tailwind CSS でデザイン調整
+- [ ] Tailwind CSS / HTMX の CDN 脱却（ローカル専用ツールのためネットワーク非依存にする。ビルド済みCSS生成 or self-host等、手段はこのフェーズで検討）
+- [ ] タイムゾーンをJSTに統一（docker-compose.yml で TZ: Asia/Tokyo を設定。frontend に tzdata パッケージ追加も必要）
 - [ ] エラーハンドリング
 - [ ] ホットリロード (Air) 導入
