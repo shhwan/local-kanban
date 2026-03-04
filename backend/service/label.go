@@ -2,14 +2,18 @@ package service
 
 import (
 	"local-kanban/backend/model"
-	"local-kanban/backend/repository"
 )
 
-type LabelService struct {
-	Repo *repository.LabelRepository
+type LabelRepo interface {
+	FindAll() ([]model.Label, error)
+	Create(label *model.Label) error
 }
 
-func NewLabelService(repo *repository.LabelRepository) *LabelService {
+type LabelService struct {
+	Repo LabelRepo
+}
+
+func NewLabelService(repo LabelRepo) *LabelService {
 	return &LabelService{Repo: repo}
 }
 

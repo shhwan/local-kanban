@@ -3,7 +3,6 @@ package service
 import (
 	"errors"
 	"local-kanban/backend/model"
-	"local-kanban/backend/repository"
 )
 
 const WIPLimit = 2
@@ -11,15 +10,31 @@ const DOINGStageName = "DOING"
 
 var ErrWIPLimitExceeded = errors.New("WIP制限超過: DOINGステージにはラベルごとに最大2つまでのタスクしか配置できません")
 
-type TaskService struct {
-	TaskRepo  *repository.TaskRepository
-	StageRepo *repository.StageRepository
+type TaskRepo interface {
+	FindAll(stageID, labelID uint) ([]model.Task, error)
+	FindByID(id uint) (*model.Task, error)
+	Create(task *model.Task) error
+	Update(task *model.Task) error
+	UpdateStage(id, stageID uint) error
+	Delete(id uint) error
+	CountByStageAndLabel(stageID, labelID, excludeTaskID uint) (int64, error)
+	CreateWorkLog(workLog *model.WorkLog) error
+	CreateNote(note *model.Note) error
 }
 
-func NewTaskService(taskRepo *repository.TaskRepository, stageRepo *repository.StageRepository) *TaskService {
+type StageFinder interface {
+	FindByName(name string) (*model.Stage, error)
+}
+
+type TaskService struct {
+	TaskRepo    TaskRepo
+	StageFinder StageFinder
+}
+
+func NewTaskService(taskRepo TaskRepo, stageFinder StageFinder) *TaskService {
 	return &TaskService{
-		TaskRepo:  taskRepo,
-		StageRepo: stageRepo,
+		TaskRepo:    taskRepo,
+		StageFinder: stageFinder,
 	}
 }
 
@@ -73,7 +88,7 @@ func (s *TaskService) AddNote(note *model.Note) error {
 // checkWIPLimit はDOINGステージのWIP制限をチェックする。
 // DOINGステージが未作成の場合はスキップする。
 func (s *TaskService) checkWIPLimit(stageID, labelID, excludeTaskID uint) error {
-	doingStage, err := s.StageRepo.FindByName(DOINGStageName)
+	doingStage, err := s.StageFinder.FindByName(DOINGStageName)
 	if err != nil {
 		return nil // DOINGステージが存在しない場合はチェック不要
 	}
