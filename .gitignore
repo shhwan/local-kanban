@@ -34,5 +34,11 @@ db/data/
 # .idea/
 # .vscode/
 
+# Build output
+bin/
+
+# templ generated files
+*_templ.go
+
 # CLAUDE
 .claude/

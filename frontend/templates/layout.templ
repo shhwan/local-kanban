@@ -1,0 +1,29 @@
+package templates
+
+templ Layout(title string) {
+	<!DOCTYPE html>
+	<html lang="ja">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>{ title }</title>
+			// Phase 1ではCDN版を使用（本番ではビルド済みCSSに置き換え予定）
+			<script src="https://cdn.tailwindcss.com"></script>
+			<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+			<link rel="stylesheet" href="/static/styles.css"/>
+		</head>
+		<body class="bg-gray-100 min-h-screen">
+			<header class="bg-indigo-600 text-white shadow-lg">
+				<div class="container mx-auto px-4 py-4">
+					<h1 class="text-2xl font-bold">Local Kanban Board</h1>
+				</div>
+			</header>
+			<main class="container mx-auto px-4 py-6">
+				{ children... }
+			</main>
+			<footer class="text-center text-gray-500 text-sm py-4">
+				<p>Local Kanban - タスク管理ツール</p>
+			</footer>
+		</body>
+	</html>
+}
