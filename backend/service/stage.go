@@ -2,14 +2,19 @@ package service
 
 import (
 	"local-kanban/backend/model"
-	"local-kanban/backend/repository"
 )
 
-type StageService struct {
-	Repo *repository.StageRepository
+type StageRepo interface {
+	FindAll() ([]model.Stage, error)
+	FindByName(name string) (*model.Stage, error)
+	Create(stage *model.Stage) error
 }
 
-func NewStageService(repo *repository.StageRepository) *StageService {
+type StageService struct {
+	Repo StageRepo
+}
+
+func NewStageService(repo StageRepo) *StageService {
 	return &StageService{Repo: repo}
 }
 
