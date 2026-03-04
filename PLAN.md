@@ -108,7 +108,6 @@
 |---|---|
 | Echo | HTTPルーター・ミドルウェア |
 | GORM | ORM (PostgreSQL接続) |
-| golang-migrate | DBマイグレーション |
 
 ### 4.3 Frontend
 
@@ -266,8 +265,6 @@ local-kanban/
 │   │   ├── task.go
 │   │   ├── label.go
 │   │   └── stage.go
-│   └── migration/        # DBマイグレーション
-│       └── 001_init.sql
 │
 ├── frontend/
 │   ├── Dockerfile
