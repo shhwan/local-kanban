@@ -10,9 +10,24 @@ services:
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
       - ./db/data:/var/lib/postgresql/data
-    # ヘルスチェック
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U kanban -d kanban"]
       interval: 5s
       timeout: 5s
       retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8080:8080"
+    # see: https://docs.docker.com/reference/compose-file/services/#depends_on
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: kanban
+      DB_PASSWORD: kanban
+      DB_NAME: kanban
