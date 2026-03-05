@@ -52,9 +52,9 @@ func TestCreate_WIPLimit(t *testing.T) {
 		wantError bool
 	}{
 		{"DOINGに0件 → 作成OK", 0, 1, false},
-		{"DOINGに1件 → 作成OK", 1, 1, false},
-		{"DOINGに2件 → WIP制限で拒否", 2, 1, true},
-		{"DOING以外 → 制限なし", 5, 99, false},
+		{"DOINGに4件 → 作成OK", 4, 1, false},
+		{"DOINGに5件 → WIP制限で拒否", 5, 1, true},
+		{"DOING以外 → 制限なし", 10, 99, false},
 	}
 
 	for _, tt := range tests {
@@ -90,9 +90,9 @@ func TestChangeStage_WIPLimit(t *testing.T) {
 		newStageID uint
 		wantError  bool
 	}{
-		{"DOINGに移動、1件 → OK", 1, 1, false},
-		{"DOINGに移動、2件 → WIP制限で拒否", 2, 1, true},
-		{"DOING以外に移動 → 制限なし", 5, 99, false},
+		{"DOINGに移動、4件 → OK", 4, 1, false},
+		{"DOINGに移動、5件 → WIP制限で拒否", 5, 1, true},
+		{"DOING以外に移動 → 制限なし", 10, 99, false},
 	}
 
 	for _, tt := range tests {

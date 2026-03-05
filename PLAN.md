@@ -41,8 +41,8 @@
 
 ### 2.4 WIP制限
 
-- DOING列: **ラベルごとに最大2タスク**まで
-- 例: FRONTEND×2 + BACKEND×2 + INFRA×2 = 最大6タスクが同時DOING可能
+- DOING列: **ラベルごとに最大5タスク**まで
+- 例: FRONTEND×5 + BACKEND×5 + INFRA×5 = 最大15タスクが同時DOING可能
 
 ### 2.5 操作方法
 
@@ -315,5 +315,5 @@ local-kanban/
 - [x] タスク作成フォーム
 - [x] 作業ログの追加・表示
 - [x] 特記事項の追加・表示
-- [x] WIP制限 (ラベルごと2タスク) の実装とUI表示
+- [x] WIP制限 (ラベルごと5タスク) の実装とUI表示
 - [x] タイムゾーンをJSTに統一（docker-compose.yml で TZ: Asia/Tokyo を設定。frontend に tzdata パッケージ追加も必要）

@@ -4,6 +4,8 @@
 生成AIの作業を追うための、kanbanボード。
 SkillやCLAUDE.mdにて、このボードでタスク管理をするような指示は必要。
 
+<img src="image.png" alt="Local Kanban Board" width="600">
+
 ## アーキテクチャ
 
 ```

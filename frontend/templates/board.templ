@@ -21,7 +21,7 @@ func tasksForStage(tasks []client.Task, stageID uint) []client.Task {
 	return filtered
 }
 
-const wipLimit = 2
+const wipLimit = 5
 
 func countByLabel(tasks []client.Task, stageID, labelID uint) int {
 	count := 0

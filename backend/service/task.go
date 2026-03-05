@@ -6,7 +6,7 @@ import (
 	"local-kanban/backend/model"
 )
 
-const WIPLimit = 2
+const WIPLimit = 5
 const DOINGStageName = "DOING"
 
 var ErrWIPLimitExceeded = errors.New("WIP制限超過: DOINGステージにはラベルごとに最大2つまでのタスクしか配置できません")

@@ -55,14 +55,14 @@ templ TaskCard(task client.Task, stages []client.Stage) {
 				<summary class="text-xs text-gray-500 cursor-pointer hover:text-gray-700">
 					&#128221; 作業ログ ({ workLogCount(task.WorkLogs) }件)
 				</summary>
-				<ul class="mt-1 space-y-1 text-xs text-gray-600 border-l-2 border-indigo-200 pl-2">
+				<div class="mt-2 space-y-1.5">
 					for _, log := range task.WorkLogs {
-						<li>
-							<span class="text-gray-400">{ log.CreatedAt.Format("01/02 15:04") }</span>
-							<span class="ml-1">{ log.Content }</span>
-						</li>
+						<div class="bg-indigo-50 rounded p-2">
+							<div class="text-xs text-gray-400">{ log.CreatedAt.Format("2006/01/02 15:04") }</div>
+							<div class="text-sm text-gray-700">{ log.Content }</div>
+						</div>
 					}
-				</ul>
+				</div>
 			</details>
 		}
 
@@ -71,14 +71,14 @@ templ TaskCard(task client.Task, stages []client.Stage) {
 				<summary class="text-xs text-gray-500 cursor-pointer hover:text-gray-700">
 					&#128204; 特記事項 ({ noteCount(task.Notes) }件)
 				</summary>
-				<ul class="mt-1 space-y-1 text-xs text-gray-600 border-l-2 border-green-200 pl-2">
+				<div class="mt-2 space-y-1.5">
 					for _, note := range task.Notes {
-						<li>
-							<span class="text-gray-400">{ note.CreatedAt.Format("01/02 15:04") }</span>
-							<span class="ml-1">{ note.Content }</span>
-						</li>
+						<div class="bg-green-50 rounded p-2">
+							<div class="text-xs text-gray-400">{ note.CreatedAt.Format("2006/01/02 15:04") }</div>
+							<div class="text-sm text-gray-700">{ note.Content }</div>
+						</div>
 					}
-				</ul>
+				</div>
 			</details>
 		}
 
