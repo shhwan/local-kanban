@@ -50,14 +50,37 @@ templ TaskCard(task client.Task, stages []client.Stage) {
 			{ task.Label.Name }
 		</span>
 
-		<div class="flex gap-3 text-xs text-gray-500 mb-3">
-			<span title="作業ログ">
-				&#128221; { workLogCount(task.WorkLogs) }件
-			</span>
-			<span title="特記事項">
-				&#128204; { noteCount(task.Notes) }件
-			</span>
-		</div>
+		if len(task.WorkLogs) > 0 {
+			<details class="mb-2">
+				<summary class="text-xs text-gray-500 cursor-pointer hover:text-gray-700">
+					&#128221; 作業ログ ({ workLogCount(task.WorkLogs) }件)
+				</summary>
+				<ul class="mt-1 space-y-1 text-xs text-gray-600 border-l-2 border-indigo-200 pl-2">
+					for _, log := range task.WorkLogs {
+						<li>
+							<span class="text-gray-400">{ log.CreatedAt.Format("01/02 15:04") }</span>
+							<span class="ml-1">{ log.Content }</span>
+						</li>
+					}
+				</ul>
+			</details>
+		}
+
+		if len(task.Notes) > 0 {
+			<details class="mb-2">
+				<summary class="text-xs text-gray-500 cursor-pointer hover:text-gray-700">
+					&#128204; 特記事項 ({ noteCount(task.Notes) }件)
+				</summary>
+				<ul class="mt-1 space-y-1 text-xs text-gray-600 border-l-2 border-green-200 pl-2">
+					for _, note := range task.Notes {
+						<li>
+							<span class="text-gray-400">{ note.CreatedAt.Format("01/02 15:04") }</span>
+							<span class="ml-1">{ note.Content }</span>
+						</li>
+					}
+				</ul>
+			</details>
+		}
 
 		<details class="mb-2">
 			<summary class="text-xs text-indigo-600 cursor-pointer hover:text-indigo-800">作業ログを追加</summary>

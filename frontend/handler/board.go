@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -85,18 +86,31 @@ func (h *BoardHandler) HandleCreateTask(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "無効なラベルIDです")
 	}
 
-	stageIDStr := c.FormValue("stage_id")
-	stageID, err := strconv.ParseUint(stageIDStr, 10, 32)
+	stageID, err := h.findInitialStageID()
 	if err != nil {
-		return c.String(http.StatusBadRequest, "無効なステージIDです")
+		return c.String(http.StatusInternalServerError, "初期ステージの取得に失敗しました")
 	}
 
-	_, err = h.Client.CreateTask(title, uint(labelID), uint(stageID))
+	_, err = h.Client.CreateTask(title, uint(labelID), stageID)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "タスクの作成に失敗しました: "+err.Error())
 	}
 
 	return h.HandleBoardPartial(c)
+}
+
+// stages API から position=0（TODO）のIDを返す
+func (h *BoardHandler) findInitialStageID() (uint, error) {
+	stages, err := h.Client.GetStages()
+	if err != nil {
+		return 0, err
+	}
+	for _, s := range stages {
+		if s.Position == 0 {
+			return s.ID, nil
+		}
+	}
+	return 0, fmt.Errorf("initial stage not found")
 }
 
 func (h *BoardHandler) HandleChangeStage(c echo.Context) error {
