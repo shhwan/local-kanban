@@ -52,7 +52,28 @@ func (h *BoardHandler) HandleBoard(c echo.Context) error {
 }
 
 func (h *BoardHandler) HandleBoardPartial(c echo.Context) error {
-	return h.HandleBoard(c)
+	tasks, err := h.Client.GetTasks()
+	if err != nil {
+		tasks = []client.Task{}
+	}
+
+	labels, err := h.Client.GetLabels()
+	if err != nil {
+		labels = []client.Label{}
+	}
+
+	stages, err := h.Client.GetStages()
+	if err != nil {
+		stages = []client.Stage{}
+	}
+
+	data := templates.BoardData{
+		Stages: stages,
+		Tasks:  tasks,
+		Labels: labels,
+	}
+
+	return render(c, http.StatusOK, templates.BoardContent(data))
 }
 
 func (h *BoardHandler) HandleCreateTask(c echo.Context) error {

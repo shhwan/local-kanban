@@ -76,7 +76,12 @@ func (h *TaskHandler) Create(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "タスクの作成に失敗しました"})
 	}
 
-	return c.JSON(http.StatusCreated, task)
+	created, err := h.Service.GetByID(task.ID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "作成後のタスク取得に失敗しました"})
+	}
+
+	return c.JSON(http.StatusCreated, created)
 }
 
 func (h *TaskHandler) Update(c echo.Context) error {
@@ -102,7 +107,12 @@ func (h *TaskHandler) Update(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "タスクの更新に失敗しました"})
 	}
 
-	return c.JSON(http.StatusOK, existing)
+	updated, err := h.Service.GetByID(existing.ID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "更新後のタスク取得に失敗しました"})
+	}
+
+	return c.JSON(http.StatusOK, updated)
 }
 
 type changeStageRequest struct {
@@ -128,7 +138,10 @@ func (h *TaskHandler) ChangeStage(c echo.Context) error {
 		if errors.Is(err, service.ErrWIPLimitExceeded) {
 			return c.JSON(http.StatusConflict, map[string]string{"error": err.Error()})
 		}
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "タスクが見つかりません"})
+		if errors.Is(err, service.ErrTaskNotFound) {
+			return c.JSON(http.StatusNotFound, map[string]string{"error": "タスクが見つかりません"})
+		}
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "ステージの変更に失敗しました"})
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "ステージを変更しました"})

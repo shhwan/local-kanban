@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"local-kanban/backend/model"
 )
 
@@ -9,6 +10,7 @@ const WIPLimit = 2
 const DOINGStageName = "DOING"
 
 var ErrWIPLimitExceeded = errors.New("WIP制限超過: DOINGステージにはラベルごとに最大2つまでのタスクしか配置できません")
+var ErrTaskNotFound = errors.New("タスクが見つかりません")
 
 type TaskRepo interface {
 	FindAll(stageID, labelID uint) ([]model.Task, error)
@@ -63,7 +65,7 @@ func (s *TaskService) Update(task *model.Task) error {
 func (s *TaskService) ChangeStage(taskID, newStageID uint) error {
 	task, err := s.TaskRepo.FindByID(taskID)
 	if err != nil {
-		return err
+		return fmt.Errorf("%w: %w", ErrTaskNotFound, err)
 	}
 
 	if err := s.checkWIPLimit(newStageID, task.LabelID, taskID); err != nil {

@@ -16,7 +16,7 @@ func NewTaskRepository(db *gorm.DB) *TaskRepository {
 
 func (r *TaskRepository) FindAll(stageID, labelID uint) ([]model.Task, error) {
 	var tasks []model.Task
-	query := r.DB.Preload("Label").Preload("Stage")
+	query := r.DB.Preload("Label").Preload("Stage").Preload("WorkLogs").Preload("Notes")
 
 	if stageID > 0 {
 		query = query.Where("stage_id = ?", stageID)
