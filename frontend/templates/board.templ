@@ -21,6 +21,22 @@ func tasksForStage(tasks []client.Task, stageID uint) []client.Task {
 	return filtered
 }
 
+const wipLimit = 2
+
+func countByLabel(tasks []client.Task, stageID, labelID uint) int {
+	count := 0
+	for _, t := range tasks {
+		if t.StageID == stageID && t.LabelID == labelID {
+			count++
+		}
+	}
+	return count
+}
+
+func isDOINGStage(stage client.Stage) bool {
+	return stage.Position == 1
+}
+
 
 // BoardContent はHTMX部分更新用（Layout なし）
 templ BoardContent(data BoardData) {
@@ -36,7 +52,7 @@ templ BoardContent(data BoardData) {
 		</div>
 
 		<div id="task-form-container" class="hidden">
-			@TaskForm(data.Labels, data.Stages)
+			@TaskForm(data.Labels)
 		</div>
 
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -45,6 +61,21 @@ templ BoardContent(data BoardData) {
 					<h3 class="font-bold text-gray-700 mb-3 text-center border-b border-gray-300 pb-2">
 						{ stage.Name }
 					</h3>
+					if isDOINGStage(stage) {
+						<div class="flex flex-wrap gap-1 mb-3 justify-center">
+							for _, label := range data.Labels {
+								<span
+									class={
+										"text-xs px-2 py-0.5 rounded-full font-medium",
+										templ.KV("opacity-50", countByLabel(data.Tasks, stage.ID, label.ID) >= wipLimit),
+									}
+									style={ fmt.Sprintf("background-color: %s; color: white", label.Color) }
+								>
+									{ label.Name } { fmt.Sprintf("%d/%d", countByLabel(data.Tasks, stage.ID, label.ID), wipLimit) }
+								</span>
+							}
+						</div>
+					}
 					<div
 						id={ fmt.Sprintf("stage-%d", stage.ID) }
 						class="space-y-3"

@@ -97,7 +97,7 @@
 
 | 技術 | バージョン | 用途 |
 |---|---|---|
-| Go | 1.22+ | バックエンド・フロントエンド両方 |
+| Go | 1.25 | バックエンド・フロントエンド両方 |
 | Docker | latest | コンテナ化 |
 | Docker Compose | v2 | オーケストレーション |
 | PostgreSQL | 16 | データベース |
@@ -240,12 +240,15 @@ INSERT INTO stages (name, position) VALUES
 ```
 local-kanban/
 ├── docker-compose.yml
+├── Makefile
 ├── PLAN.md
+│
+├── .github/
+│   └── pull_request_template.md
 │
 ├── backend/
 │   ├── Dockerfile
 │   ├── go.mod
-│   ├── go.sum
 │   ├── main.go
 │   ├── handler/          # HTTPハンドラ
 │   │   ├── task.go
@@ -261,21 +264,25 @@ local-kanban/
 │   │   ├── task.go
 │   │   ├── label.go
 │   │   └── stage.go
-│   ├── service/          # ビジネスロジック (WIP制限等)
-│   │   ├── task.go
-│   │   ├── label.go
-│   │   └── stage.go
+│   └── service/          # ビジネスロジック (WIP制限等)
+│       ├── task.go
+│       ├── task_test.go
+│       ├── label.go
+│       └── stage.go
 │
 ├── frontend/
 │   ├── Dockerfile
 │   ├── go.mod
-│   ├── go.sum
 │   ├── main.go
 │   ├── client/           # Backend APIクライアント
-│   │   └── task.go
+│   │   ├── client.go
+│   │   ├── types.go
+│   │   ├── task.go
+│   │   ├── label.go
+│   │   └── stage.go
 │   ├── handler/          # ページハンドラ
 │   │   └── board.go
-│   ├── templates/        # Templコンポーネント
+│   ├── templates/        # Templコンポーネント（*_templ.go は自動生成）
 │   │   ├── layout.templ
 │   │   ├── board.templ
 │   │   ├── task_card.templ
@@ -292,27 +299,21 @@ local-kanban/
 ## 8. 開発フェーズ
 
 ### Phase 1: 基盤構築
-- [ ] Docker Compose 環境構築 (Go + PostgreSQL)
-- [ ] Backend: Echo セットアップ + DB接続
-- [ ] Backend: マイグレーション実行
-- [ ] Backend: CRUD API 実装
+- [x] Docker Compose 環境構築 (Go + PostgreSQL)
+- [x] Backend: Echo セットアップ + DB接続
+- [x] Backend: マイグレーション実行
+- [x] Backend: CRUD API 実装
 
 ### Phase 2: フロントエンド
-- [ ] Frontend: Echo + Templ セットアップ
-- [ ] Frontend: Kanbanボード画面 (3列表示)
-- [ ] Frontend: タスクカード (ラベル色分け)
-- [ ] Frontend: ステータス変更ボタン
-- [ ] Frontend: HTMX による部分更新
+- [x] Frontend: Echo + Templ セットアップ
+- [x] Frontend: Kanbanボード画面 (3列表示)
+- [x] Frontend: タスクカード (ラベル色分け)
+- [x] Frontend: ステータス変更ボタン
+- [x] Frontend: HTMX による部分更新
 
 ### Phase 3: 機能追加
-- [ ] タスク作成フォーム
-- [ ] 作業ログの追加・表示
-- [ ] 特記事項の編集
-- [ ] WIP制限 (ラベルごと2タスク) の実装とUI表示
-
-### Phase 4: 仕上げ
-- [ ] Tailwind CSS でデザイン調整
-- [ ] Tailwind CSS / HTMX の CDN 脱却（ローカル専用ツールのためネットワーク非依存にする。ビルド済みCSS生成 or self-host等、手段はこのフェーズで検討）
-- [ ] タイムゾーンをJSTに統一（docker-compose.yml で TZ: Asia/Tokyo を設定。frontend に tzdata パッケージ追加も必要）
-- [ ] エラーハンドリング
-- [ ] ホットリロード (Air) 導入
+- [x] タスク作成フォーム
+- [x] 作業ログの追加・表示
+- [x] 特記事項の追加・表示
+- [x] WIP制限 (ラベルごと2タスク) の実装とUI表示
+- [x] タイムゾーンをJSTに統一（docker-compose.yml で TZ: Asia/Tokyo を設定。frontend に tzdata パッケージ追加も必要）
