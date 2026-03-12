@@ -100,4 +100,10 @@ curl -X POST http://localhost:8080/api/tasks/1/logs \
 
 ## WIP制限
 
-DOING列はラベルごとに最大2タスクまで。制限を超えるとAPIが `409 Conflict` を返す。
+DOING列はラベルごとに最大5タスクまで。制限を超えるとAPIが `409 Conflict` を返す。
+
+## Pre-commit
+
+```bash
+pre-commit install    # 初回セットアップ
+```
