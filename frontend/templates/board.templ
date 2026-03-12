@@ -34,7 +34,7 @@ func countByLabel(tasks []client.Task, stageID, labelID uint) int {
 }
 
 func isDOINGStage(stage client.Stage) bool {
-	return stage.Position == 1
+	return stage.Name == "DOING"
 }
 
 
