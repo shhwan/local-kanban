@@ -9,7 +9,7 @@ import (
 const WIPLimit = 5
 const DOINGStageName = "DOING"
 
-var ErrWIPLimitExceeded = errors.New("WIP制限超過: DOINGステージにはラベルごとに最大2つまでのタスクしか配置できません")
+var ErrWIPLimitExceeded = fmt.Errorf("WIP制限超過: DOINGステージにはラベルごとに最大%dつまでのタスクしか配置できません", WIPLimit)
 var ErrTaskNotFound = errors.New("タスクが見つかりません")
 
 type TaskRepo interface {
